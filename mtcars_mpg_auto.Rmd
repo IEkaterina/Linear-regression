@@ -1,0 +1,71 @@
+---
+title: "MOTOR TREND"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. Is an automatic or manual transmission better for MPG?
+2. Quantify the MPG difference between automatic and manual transmissions.
+
+## Exploratory data analysis
+
+Let's take a look at the data to get the contants.
+```{r mtcars}
+head(mtcars)
+summary(mtcars)
+```
+
+The variables "mpg", "disp", "hp", "drat", "wt", "qsec" are numeric, the variables "cyl", "vs", "am", "gear", "carb" are categorical. According to correlation matrix, all numeric vairables are strongly dependent from one another.
+
+```{r}
+cor(mtcars[,c(1,3,4,5,6,7)])
+```
+
+The mean of a fuel consumption equal 20.09 Miles/gallon, the 25th quantille - 15.43 Miles/gallon, the 75th quantille - 22.80 Miles/gallon. There is represented the plot of how the MPG vary across the types of transmission in the appendix. About 75% of cars equipped manual transmission have a fuel consumption above 20 Miles/gallon. Whereas about 75% of cars equipped automatic transmission have a fuel consumption below 20 Miles/gallon.
+
+## Linear regression
+The linear model containing all variables as the predictors was fitted. The ANOVA test revealed that quantity of predictors can be reduced to "am", "disp", "hp", "wt", "qsec" (the outfit is represented in the appendix). There are displayed the summary of reduced linear model:
+
+```{r}
+fit <- lm(mpg ~ as.factor(am) + disp + hp + wt + qsec, mtcars)
+summary(fit)
+```
+
+The F-statistic results suggest that the variables included have an impact on Miles/gallon (F-statistic: 32.96 on 5 and 26 DF,  p-value: 1.844e-10).
+The estimated MPG's mean of cars equipped an automatic transmission is 14.36190 Miles/gallon. The estimated MPG's mean of cars equipped an manual transmission is greater on 3.47045 Miles/gallon.
+
+The plots of residuals are represented in the appendix. Residuals are approximately normally distributed and heteroskedasticity does not seem to be an issue.
+
+## Summary
+
+The  that the type of transmission affects on MPG. The cars equipped automatic transmission have a fuel consumption greater than ones equipped manual transmission. So manual transmission is better for MPG and the difference of MPG's means equals 3.47 Miles/gallon.
+
+## Appendix
+On the boxplot, the label "0" represents automatic transmission, "1" - manual transmission.
+```{r}
+boxplot(mpg ~ am, data = mtcars, main = "Miles/gallon")
+```
+
+ANOVA test for the model with all predictors.
+
+```{r}
+anova(lm(mpg ~ as.factor(am) + disp + hp + drat + wt + qsec + as.factor(cyl) + 
+                as.factor(vs) + as.factor(gear) + as.factor(carb), mtcars))
+```
+
+```{r out.width = "90%"}
+plot(fit, which=1)
+```
+
+```{r out.width = "90%"}
+plot(fit, which=2)
+```
+
+
+```{r}
+plot(density(fit$residuals), xlab = "Residuals", ylab = "Density",
+     main = "Residual distribution")
+```
